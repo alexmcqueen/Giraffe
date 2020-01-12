@@ -1,0 +1,262 @@
+import random
+
+'''
+Create a Euro millions program.
+The program must be able to create a ticket (the ticket) and play it against a set of results (the draw). This set of 
+results can stay the same each time or be generated every time you create a ticket, like in real life.
+
+You must be able to play the game until you win the jackpot and count the number of attempts it takes.
+You must also count the number of other wins you get during this time.
+You must calculate the amount of money it cost to win the lottery.
+
+How Euro millions works:
+You pick five numbers between 1 and 50.
+You pick 2 lucky stars between 1 and 12.
+Each ticket costs £2.50.
+
+You can have the following combination of results (from best to worst). Jackpot is getting all 7 numbers:
+
+Matched Numbers         Lucky Stars
+5                       2
+5                       1
+5                       0
+4                       2
+4                       1
+3                       2
+4                       0
+2                       2
+3                       1
+3                       0
+1                       2
+2                       1
+2                       0
+
+'''
+
+'''
+Things to implement to get this to work.
+Create a class which makes a ticket. A ticket is made up of 2 parts; 5 numbers between 1- 50. 2 numbers between 1 - 12.
+Create method to generate a random ticket. THis can be used to generate a ticket and a draw as they are the same thing.
+Create a method to compare 2 tickets together. Needs to work out what win there was. 
+
+'''
+
+
+class EuroLotteryTicket:
+
+    # Class variables
+    default_ticket_price = 2.50
+    ls_balls = list(range(1, 13))
+    main_balls = list(range(1, 51))
+
+    # Self is the instance and passed automatically when called outside the class
+    def __init__(self, main_line, lucky_star_line, price):
+        self.main_line = main_line
+        self.lucky_star_line = lucky_star_line
+        self.price = price
+        self.total_ticket_line = self.main_line + self.lucky_star_line
+
+    # Check two instances to see if the tickets match and if any win is available
+    def check_for_win(self, jackpot):
+
+        ls_matches = 0
+        main_matches = 0
+        win_type = ""
+
+        for i in self.lucky_star_line:
+            for j in jackpot.lucky_star_line:
+                if i == j:
+                    ls_matches += 1
+
+        for i in self.main_line:
+            for j in jackpot.main_line:
+                if i == j:
+                    main_matches += 1
+
+        what_did_we_win = EuroLotteryTicket.check_win_type(main_matches, ls_matches)
+
+        return what_did_we_win
+
+    # Check if any wins available based upon number of matches of main line and lucky star line
+    @staticmethod
+    def check_win_type(main_matches, ls_matches):
+        win_type = ""
+        if main_matches == 5 and ls_matches == 2:
+            win_type = "Jackpot"
+        elif main_matches == 5 and ls_matches == 1:
+            win_type = "5 and 1"
+        elif main_matches == 5 and ls_matches == 0:
+            win_type = "5 and 0"
+        elif main_matches == 4 and ls_matches == 2:
+            win_type = "4 and 2"
+        elif main_matches == 4 and ls_matches == 1:
+            win_type = "4 and 1"
+        elif main_matches == 3 and ls_matches == 2:
+            win_type = "3 and 2"
+        elif main_matches == 4 and ls_matches == 0:
+            win_type = "4 and 0"
+        elif main_matches == 2 and ls_matches == 2:
+            win_type = "2 and 2"
+        elif main_matches == 3 and ls_matches == 1:
+            win_type = "3 and 1"
+        elif main_matches == 3 and ls_matches == 0:
+            win_type = "3 and 0"
+        elif main_matches == 1 and ls_matches == 2:
+            win_type = "1 and 2"
+        elif main_matches == 2 and ls_matches == 1:
+            win_type = "2 and 1"
+        elif main_matches == 2 and ls_matches == 0:
+            win_type = "2 and 0"
+        else:
+            win_type = "Lost"
+
+        return win_type
+
+    # Return a list with generated lucky star draw
+    @classmethod
+    def get_lucky_star(cls):
+        lucky_star = []
+        draw = EuroLotteryTicket.ls_balls
+        random.shuffle(draw)
+        lucky_star = draw[:2]
+        lucky_star.sort()
+
+        return lucky_star
+
+    # Return a list with generated main star draw
+    @classmethod
+    def get_main(cls):
+        main = []
+        draw = EuroLotteryTicket.main_balls
+        random.shuffle(draw)
+        main = draw[:5]
+        main.sort()
+
+        return main
+
+    # Create a random ticket. Determines random numbers and then calls __init__ with those values
+    @classmethod
+    def from_random(cls):
+        main_line = EuroLotteryTicket.get_main()
+        lucky_star_line = EuroLotteryTicket.get_lucky_star()
+        price = EuroLotteryTicket.default_ticket_price
+
+        return cls(main_line, lucky_star_line, price)
+
+# Lets play the game
+
+# Create a line that we will use each time.
+# Create a random line to test against. This is our draw line
+
+
+ticket_info = []
+
+jackpot = 0
+five_and_one = 0
+five_and_zero = 0
+four_and_two = 0
+four_and_one = 0
+three_and_two = 0
+four_and_zero = 0
+two_and_two = 0
+three_and_one = 0
+three_and_zero = 0
+one_and_two = 0
+two_and_one = 0
+two_and_zero = 0
+lost = 0
+# Count in case we made a mistake with if statement
+error = 0
+
+
+my_line = EuroLotteryTicket.from_random()
+
+i = 0
+while i < 100000000:
+
+    draw = EuroLotteryTicket.from_random()
+    what_we_won = EuroLotteryTicket.check_for_win(my_line, draw)
+
+    if what_we_won == "Jackpot":
+        jackpot += 1
+    elif what_we_won == "5 and 1":
+        five_and_one += 1
+    elif what_we_won == "5 and 0":
+        five_and_zero += 1
+    elif what_we_won == "4 and 2":
+        four_and_two += 1
+    elif what_we_won == "4 and 1":
+        four_and_one += 1
+    elif what_we_won == "3 and 2":
+        three_and_two += 1
+    elif what_we_won == "4 and 0":
+        four_and_zero += 1
+    elif what_we_won == "2 and 2":
+        two_and_two += 1
+    elif what_we_won == "3 and 1":
+        three_and_one += 1
+    elif what_we_won == "3 and 0":
+        three_and_zero += 1
+    elif what_we_won == "1 and 2":
+        one_and_two += 1
+    elif what_we_won == "2 and 1":
+        two_and_one += 1
+    elif what_we_won == "2 and 0":
+        two_and_zero += 1
+
+    elif what_we_won == "Lost":
+        lost += 1
+    else:
+        error += 1
+
+    # ticket_info.append([my_line.total_ticket_line, draw.total_ticket_line, what_we_won])
+
+    i += 1
+
+print("WELCOME TO THE EURO MILLIONS GAME:")
+print("You have played " + str(i) + " times. Here is the breakdown of your wins:\n")
+print("Number of losses: " + str(lost))
+
+print("Jackpot: " + str(jackpot))
+print("5 and 1: " + str(five_and_one))
+print("5 and 0: " + str(five_and_zero))
+print("4 and 2: " + str(four_and_two))
+print("4 and 1: " + str(four_and_one))
+print("3 and 2: " + str(three_and_two))
+print("4 and 0: " + str(four_and_zero))
+print("2 and 2: " + str(two_and_two))
+print("3 and 1: " + str(three_and_one))
+print("3 and 0: " + str(three_and_zero))
+print("1 and 2: " + str(one_and_two))
+print("2 and 1: " + str(two_and_one))
+print("2 and 0: " + str(two_and_zero))
+print("Errors: " + str(error))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
